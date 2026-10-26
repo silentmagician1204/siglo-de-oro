@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voces del Siglo de Oro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@1&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav">
+  <b>Voces del Siglo de Oro</b>
+  <nav class="nav-tabs" role="tablist" aria-label="Secciones">
+    <button class="nav-tab" id="tab-inicio" type="button" role="tab" aria-controls="inicio" aria-selected="true" data-vista="inicio">Inicio</button>
+    <button class="nav-tab" id="tab-autores" type="button" role="tab" aria-controls="autores" aria-selected="false" tabindex="-1" data-vista="autores">Autores</button>
+    <button class="nav-tab" id="tab-quijote" type="button" role="tab" aria-controls="quijote" aria-selected="false" tabindex="-1" data-vista="quijote">El Quijote</button>
+    <button class="nav-tab" id="tab-multimedia" type="button" role="tab" aria-controls="multimedia" aria-selected="false" tabindex="-1" data-vista="multimedia">Multimedia</button>
+    <button class="nav-tab" id="tab-novedades" type="button" role="tab" aria-controls="novedades" aria-selected="false" tabindex="-1" data-vista="novedades">Novedades</button>
+  </nav>
+</header>
+
+<main>
+  <section class="vista inicio" id="inicio" role="tabpanel" aria-labelledby="tab-inicio">
+  <div class="hero">
+    <div class="hero-copy">
+      <h1>Voces del <span class="oro">Siglo de Oro</span></h1>
+      <p>Entre Garcilaso y Sor Juana pasan más de doscientos años de poesía, teatro y novela en lengua española. Esta página reúne a los once autores que vimos en el curso: quién fue cada uno, qué escribió y un fragmento para leer o escuchar.</p>
+      <p>Explora la línea del tiempo o abre una ficha para descubrir sus obras.</p>
+      <div class="tl-wrap">
+        <div class="tl" id="tl"></div>
+        <div class="anios"><span>1470</span><span>1550</span><span>1630</span><span>1700</span></div>
+      </div>
+    </div>
+    <figure class="hero-art">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Las_Meninas_01.jpg?width=1000" alt="Las meninas, pintura de Diego Velázquez de 1656" width="1000" height="1152" fetchpriority="high">
+      <figcaption>Diego Velázquez, <i>Las meninas</i>, 1656</figcaption>
+    </figure>
+  </div>
+  </section>
+
+  <section class="vista" id="autores" role="tabpanel" aria-labelledby="tab-autores" hidden>
+    <h2>Autores y obras</h2>
+    <p class="sub">Filtra por género o escribe un nombre o una obra.</p>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Buscar: Quijote, Calderón, soneto..." aria-label="Buscar autor u obra">
+      <button class="chip" data-f="todos" aria-pressed="true">Todos</button>
+      <button class="chip" data-f="poesia" aria-pressed="false">Poesía</button>
+      <button class="chip" data-f="narrativa" aria-pressed="false">Narrativa</button>
+      <button class="chip" data-f="teatro" aria-pressed="false">Teatro</button>
+      <output class="resultados" id="resultados" aria-live="polite" aria-atomic="true"></output>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="vacio" id="vacio">No hay resultados. Prueba con otra palabra.</p>
+  </section>
+
+  <section class="vista" id="quijote" role="tabpanel" aria-labelledby="tab-quijote" hidden>
+    <h2>El Quijote</h2>
+    <p class="sub">Capítulos de la obra para consultar desde esta página.</p>
+    <p class="capitulo-estado" id="capitulo-estado"></p>
+    <div class="capitulos-lista" id="capitulos-lista"></div>
+  </section>
+
+  <section class="vista multi" id="multimedia" role="tabpanel" aria-labelledby="tab-multimedia" hidden>
+    <div class="in">
+      <h2>Multimedia</h2>
+      <p class="sub">Un video para ver y fragmentos para escuchar.</p>
+      <div class="video" id="video"></div>
+    </div>
+  </section>
+
+  <section class="vista" id="novedades" role="tabpanel" aria-labelledby="tab-novedades" hidden>
+    <h2>Novedades</h2>
+    <p class="sub">Cambios que le voy haciendo a la página.</p>
+    <ul class="nov" id="nov"></ul>
+  </section>
+</main>
+
+<footer>
+  Trabajo final de Literatura del Siglo de Oro español · Stephanye Flor · Semestre XI · Universidad del Valle<br>
+  Textos del Siglo de Oro en dominio público. Más lecturas en la <a href="https://www.cervantesvirtual.com/" target="_blank" rel="noopener" style="color:#e9a820">Biblioteca Virtual Miguel de Cervantes</a>.
+</footer>
+
+<script>
+/* ===== DATOS: edita aquí para cambiar contenidos ===== */
+const imagenAutor = nombre => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(nombre)}?width=480`;
+const AUTORES = [
+ {n:"Fernando de Rojas", d:"c. 1470 – 1541", y:1470, g:"teatro", i:"Fernando-de-Rojas.jpg", c:"Retrato tradicional; no se conserva un retrato contemporáneo confirmado.", o:["La Celestina (1499 y 1502)"],
+  b:"Bachiller en leyes que vivió en La Puebla de Montalbán. Su única obra conocida cuenta el amor de Calisto y Melibea, y la alcahueta Celestina maneja todo con palabras.",
+  f:"Todas las cosas ser criadas a manera de contienda o batalla.", fa:"La Celestina, prólogo", w:"Fernando_de_Rojas"},
+ {n:"Garcilaso de la Vega", d:"c. 1498 – 1536", y:1498, g:"poesia", i:"Retrato de hombre con la cruz de caballero de Alcántara.jpg", c:"Retrato atribuido a Garcilaso; la identidad se discute.", o:["Sonetos","Églogas","Elegías y canciones"],
+  b:"Soldado y poeta de la corte de Carlos V. Trajo a España el endecasílabo italiano y murió joven en combate. Sus poemas se publicaron en 1543, junto a los de Boscán.",
+  f:"En tanto que de rosa y azucena se muestra la color en vuestro gesto.", fa:"Soneto XXIII", w:"Garcilaso_de_la_Vega"},
+ {n:"Fray Luis de León", d:"1527 – 1591", y:1527, g:"poesia", i:"Pacheco, Francisco - Description book of real Portraits, of Illustrious and Memorable men. - Google Art Project.jpg", c:"Retrato histórico atribuido a Fray Luis de León.", o:["Oda a la vida retirada","De los nombres de Cristo","La perfecta casada"],
+  b:"Fraile agustino y profesor en Salamanca. Pasó casi cinco años preso por la Inquisición. Su poesía busca la calma y el orden frente al ruido del mundo.",
+  f:"¡Qué descansada vida la del que huye del mundanal ruido!", fa:"Oda a la vida retirada", w:"Fray_Luis_de_León"},
+ {n:"San Juan de la Cruz", d:"1542 – 1591", y:1542, g:"poesia", i:"Zurbarán (atribuido)-John of the Cross-1656.jpg", c:"Retrato atribuido a Francisco de Zurbarán.", o:["Noche oscura","Cántico espiritual","Llama de amor viva"],
+  b:"Carmelita y reformador junto a Santa Teresa. Escribió poemas cortos sobre la unión del alma con Dios, con imágenes tomadas del amor humano.",
+  f:"En una noche oscura, con ansias en amores inflamada.", fa:"Noche oscura", w:"San_Juan_de_la_Cruz"},
+ {n:"Miguel de Cervantes", d:"1547 – 1616", y:1547, g:"narrativa", i:"Cervantes_Jáuregui.jpg", c:"Retrato tradicional atribuido a Juan de Jáuregui; la atribución es discutida.", o:["Don Quijote de la Mancha (1605 y 1615)","Novelas ejemplares (1613)","La Galatea (1585)"],
+  b:"Herido en Lepanto y cautivo cinco años en Argel. Con el Quijote inventó la novela moderna: un hombre que lee demasiados libros de caballerías y sale a vivirlos.",
+  f:"En un lugar de la Mancha, de cuyo nombre no quiero acordarme.", fa:"Don Quijote, capítulo I", w:"Miguel_de_Cervantes"},
+ {n:"Luis de Góngora y Argote", d:"1561 – 1627", y:1561, g:"poesia", i:"Diego Rodríguez de Silva y Velázquez - Luis de Góngora y Argote - Google Art Project.jpg", c:"Retrato de Luis de Góngora por Diego Velázquez.", o:["Fábula de Polifemo y Galatea","Soledades","Sonetos"],
+  b:"Sacerdote cordobés y el gran nombre del culteranismo: un estilo lleno de latinismos, metáforas y alusiones. Quevedo lo atacó sin piedad.",
+  f:"Mientras por competir con tu cabello oro bruñido al sol relumbra en vano.", fa:"Soneto CLXVI", w:"Luis_de_Góngora"},
+ {n:"Lope de Vega", d:"1562 – 1635", y:1562, g:"teatro", i:"LopedeVega.jpg", c:"Retrato de Lope de Vega.", o:["Fuenteovejuna","El perro del hortelano","Arte nuevo de hacer comedias (1609)"],
+  b:"Escribió cientos de comedias y cambió el teatro español al mezclar lo trágico con lo cómico y darle protagonismo al pueblo.",
+  f:"Un soneto me manda hacer Violante, que en mi vida me he visto en tanto aprieto.", fa:"Soneto de repente", w:"Lope_de_Vega"},
+ {n:"Tirso de Molina", d:"c. 1579 – 1648", y:1579, g:"teatro", i:"Tirso de molina.jpg", c:"Retrato tradicional de Tirso de Molina.", o:["El burlador de Sevilla","El condenado por desconfiado","Don Gil de las calzas verdes"],
+  b:"Fraile mercedario, seguidor de Lope. En El burlador de Sevilla nació el personaje de Don Juan, un seductor que se burla de todos hasta que le llega el castigo.",
+  f:"¡Tan largo me lo fiáis!", fa:"El burlador de Sevilla (frase de Don Juan)", w:"Tirso_de_Molina"},
+ {n:"Francisco de Quevedo", d:"1580 – 1645", y:1580, g:"poesia narrativa", i:"Quevedo (copia de Velázquez).jpg", c:"Copia de un retrato atribuido a Diego Velázquez.", o:["El Buscón","Los sueños","Sonetos amorosos y morales"],
+  b:"Escritor madrileño de ingenio ácido y de vida política movida, con destierros y cárcel. Pasa de la sátira más cruel a poemas muy serios sobre el tiempo y la muerte.",
+  f:"Cerrar podrá mis ojos la postrera sombra que me llevare el blanco día.", fa:"Amor constante más allá de la muerte", w:"Francisco_de_Quevedo"},
+ {n:"Pedro Calderón de la Barca", d:"1600 – 1681", y:1600, g:"teatro", i:"Pedro Calderón de la Barca.png", c:"Retrato de Pedro Calderón de la Barca.", o:["La vida es sueño","El alcalde de Zalamea","El gran teatro del mundo"],
+  b:"Dramaturgo de la corte de Felipe IV y luego sacerdote. Su teatro es más filosófico y trabajado en el verso que el de Lope.",
+  f:"¿Qué es la vida? Un frenesí. ¿Qué es la vida? Una ilusión, una sombra, una ficción.", fa:"La vida es sueño", w:"Pedro_Calderón_de_la_Barca"},
+ {n:"Sor Juana Inés de la Cruz", d:"1648 – 1695", y:1648, g:"poesia teatro", i:"Sor Juana by Miguel Cabrera (cropped).jpg", c:"Retrato de Sor Juana por Miguel Cabrera.", o:["Primero sueño","Respuesta a Sor Filotea","Hombres necios (redondillas)"],
+  b:"Monja novohispana que estudió por su cuenta y llegó a ser la voz más importante de la poesía en América en su siglo. Defendió el derecho de las mujeres a aprender.",
+  f:"Hombres necios que acusáis a la mujer sin razón.", fa:"Redondillas", w:"Sor_Juana_Inés_de_la_Cruz"}
+];
+
+const NOVEDADES = [
+ {f:"2026-10-12", t:"Primera versión: línea del tiempo, fichas de los once autores y buscador."},
+ {f:"2026-10-12", t:"Botón Escuchar en cada ficha y sección de multimedia."}
+];
+
+/* Capítulos del Quijote. Para agregar uno, copia una línea y cambia los datos.
+   Ejemplo:  {numero:1, titulo:"Título del capítulo", contenido:"Texto del capítulo..."},  */
+const CAPITULOS = [
+];
+
+/* Pega aquí el ID de un video de YouTube (lo que va después de v=) */
+const VIDEO_ID = "fcJ987ZtxXk";
+
+/* ===== LÓGICA ===== */
+const $ = s => document.querySelector(s);
+const quitaTildes = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const grid = $("#grid");
+const fichaAnimaciones = new WeakMap();
+
+function animarFicha(detalle, estadoForzado){
+  const cuerpo = detalle.querySelector(".cuerpo");
+  const anterior = fichaAnimaciones.get(detalle);
+  const estabaAbierta = anterior?.abierta ?? detalle.open;
+  const abrir = estadoForzado ?? !estabaAbierta;
+  anterior?.animacion.cancel();
+  const estilo = getComputedStyle(cuerpo);
+  const alturaActual = cuerpo.getBoundingClientRect().height;
+  const opacidadActual = Number.parseFloat(estilo.opacity) || (alturaActual ? 1 : 0);
+  const transformacionActual = estilo.transform === "none" ? "translateY(0px)" : estilo.transform;
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  cuerpo.style.height = `${alturaActual}px`;
+  cuerpo.style.opacity = opacidadActual;
+  cuerpo.style.transform = transformacionActual;
+  cuerpo.style.overflow = "hidden";
+  if(abrir){
+    document.querySelectorAll(".autor[open]").forEach(abierta=>{
+      if(abierta !== detalle) animarFicha(abierta,false);
+    });
+    detalle.open = true;
+  }
+  const alturaFinal = abrir ? cuerpo.scrollHeight : 0;
+  const animacion = cuerpo.animate([
+    {height:`${alturaActual}px`,opacity:opacidadActual,transform:transformacionActual},
+    {height:`${alturaFinal}px`,opacity:abrir ? 1 : 0,transform:abrir ? "translateY(0px)" : "translateY(-10px)"}
+  ],{duration:reducido ? 160 : 520,easing:"cubic-bezier(.22,1,.36,1)",fill:"both"});
+  const estado = {abierta:abrir,animacion};
+  fichaAnimaciones.set(detalle,estado);
+  animacion.onfinish = ()=>{
+    if(fichaAnimaciones.get(detalle) !== estado) return;
+    if(!abrir) detalle.open = false;
+    cuerpo.style.height = "";
+    cuerpo.style.opacity = "";
+    cuerpo.style.transform = "";
+    cuerpo.style.overflow = "";
+    fichaAnimaciones.delete(detalle);
+  };
+}
+const pestañas = [...document.querySelectorAll(".nav-tab")];
+
+function mostrarVista(id, desplazar = true){
+  const anterior = document.querySelector("[role=tabpanel]:not([hidden])");
+  pestañas.forEach(pestaña=>{
+    const activa = pestaña.dataset.vista === id;
+    pestaña.setAttribute("aria-selected",activa);
+    pestaña.tabIndex = activa ? 0 : -1;
+    const vista = document.getElementById(pestaña.dataset.vista);
+    vista.hidden = !activa;
+    if(activa && vista !== anterior){
+      vista.classList.remove("vista-entrando");
+      void vista.offsetWidth;
+      vista.classList.add("vista-entrando");
+      vista.addEventListener("animationend",()=>vista.classList.remove("vista-entrando"),{once:true});
+    }
+  });
+  if(desplazar) window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+}
+
+pestañas.forEach(pestaña=>{
+  pestaña.addEventListener("click",()=>mostrarVista(pestaña.dataset.vista));
+  pestaña.addEventListener("keydown",e=>{
+    const indice = pestañas.indexOf(pestaña);
+    const destino = e.key === "ArrowRight" ? (indice+1)%pestañas.length
+      : e.key === "ArrowLeft" ? (indice-1+pestañas.length)%pestañas.length
+      : e.key === "Home" ? 0
+      : e.key === "End" ? pestañas.length-1
+      : indice;
+    if(destino === indice) return;
+    e.preventDefault();
+    pestañas[destino].focus();
+    mostrarVista(pestañas[destino].dataset.vista);
+  });
+});
+
+AUTORES.forEach((a,i)=>{
+  const d = document.createElement("details");
+  d.className = "autor"; d.id = "a"+i; d.dataset.g = a.g;
+  d.dataset.t = quitaTildes([a.n,a.o.join(" "),a.b].join(" "));
+  d.innerHTML = `<summary><strong>${a.n}</strong><span>${a.d}</span></summary>
+  <div class="cuerpo"><figure class="autor-retrato"><img src="${imagenAutor(a.i)}" alt="Retrato de ${a.n}" loading="lazy" onerror="this.closest('figure').hidden = true"><figcaption>${a.c}</figcaption></figure><p>${a.b}</p>
+   <h3>Obras</h3><ul>${a.o.map(x=>`<li>${x}</li>`).join("")}</ul>
+   <p class="frag">${a.f}</p><p class="fuente">${a.fa}</p>
+   <button class="btn" type="button">Escuchar</button>
+   <a class="btn" target="_blank" rel="noopener" href="https://es.wikipedia.org/wiki/${a.w}">Leer más</a></div>`;
+  d.querySelector("summary").addEventListener("click",e=>{
+    e.preventDefault();
+    animarFicha(d);
+  });
+  d.querySelector("button").onclick = e => {
+    const s = window.speechSynthesis; if(!s) return;
+    if(s.speaking){ s.cancel(); e.target.textContent="Escuchar"; return; }
+    const u = new SpeechSynthesisUtterance(a.f); u.lang="es-ES"; u.rate=.9;
+    u.onend = ()=> e.target.textContent="Escuchar";
+    e.target.textContent="Detener"; s.speak(u);
+  };
+  grid.appendChild(d);
+});
+
+/* línea del tiempo */
+const ETIQUETAS_TIEMPO = ["Rojas", "Garcilaso", "Fray Luis", "San Juan", "Cervantes", "Góngora", "Lope", "Tirso", "Quevedo", "Calderón", "Sor Juana"];
+AUTORES.forEach((a,i)=>{
+  const b = document.createElement("button");
+  b.className="pt"; b.style.left = ((a.y-1470)/(1700-1470)*100)+"%";
+  b.innerHTML = `<span class="lbl">${ETIQUETAS_TIEMPO[i]}</span><span class="stem" style="height:${20+(i%3)*42}px"></span><span class="dot"></span>`;
+  b.setAttribute("aria-label", a.n+", "+a.d);
+  b.onclick = ()=>{
+    setFiltro("todos"); $("#q").value=""; filtrar();
+    mostrarVista("autores",false);
+    const d = $("#a"+i); animarFicha(d,true); d.scrollIntoView({behavior:"smooth",block:"center"});
+  };
+  $("#tl").appendChild(b);
+});
+
+/* filtros y búsqueda */
+let filtro = "todos";
+function setFiltro(f){
+  filtro = f;
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.f===f));
+}
+function filtrar(){
+  const q = quitaTildes($("#q").value.trim()); let n = 0;
+  document.querySelectorAll(".autor").forEach(d=>{
+    const ok = (filtro==="todos" || d.dataset.g.split(" ").includes(filtro)) && d.dataset.t.includes(q);
+    d.style.display = ok ? "" : "none"; if(ok) n++;
+  });
+  $("#resultados").textContent = `${n} ${n===1 ? "resultado" : "resultados"}`;
+  $("#vacio").style.display = n ? "none" : "block";
+}
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{setFiltro(c.dataset.f);filtrar();});
+$("#q").addEventListener("input", filtrar);
+document.addEventListener("keydown",e=>{
+  if(e.key!=="/" || e.ctrlKey || e.altKey || e.metaKey) return;
+  if(e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable='true'], [role='textbox']")) return;
+  e.preventDefault(); $("#q").focus();
+});
+filtrar();
+
+/* capítulos del Quijote: se escriben en la lista CAPITULOS (arriba, junto a NOVEDADES) */
+const listaCapitulos = $("#capitulos-lista");
+const estadoCapitulo = $("#capitulo-estado");
+
+function mostrarCapitulos(){
+  listaCapitulos.replaceChildren();
+  estadoCapitulo.textContent = CAPITULOS.length ? "" : "Todavía no hay capítulos cargados.";
+  [...CAPITULOS].sort((a,b)=>a.numero-b.numero).forEach(capitulo=>{
+    const ficha = document.createElement("details");
+    ficha.className = "capitulo-item";
+    const titulo = document.createElement("summary");
+    titulo.textContent = `Capítulo ${capitulo.numero}: ${capitulo.titulo}`;
+    const contenido = document.createElement("p");
+    contenido.textContent = capitulo.contenido;
+    ficha.append(titulo,contenido);
+    listaCapitulos.append(ficha);
+  });
+}
+mostrarCapitulos();
+
+/* video */
+const video = $("#video");
+video.innerHTML = VIDEO_ID
+  ? `<button class="video-poster" type="button" aria-label="Reproducir video de Literatura del Siglo de Oro español"><img src="https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg" alt="Portada del video seleccionado"><span class="video-play">▶ Reproducir video</span></button>`
+  : `<p>Busca una puesta en escena de <a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=La+vida+es+sue%C3%B1o+Calder%C3%B3n+teatro">La vida es sueño en YouTube</a></p>`;
+if(VIDEO_ID){
+  video.querySelector(".video-poster").addEventListener("click",()=>{
+    video.innerHTML = `<iframe src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1" title="Video de Literatura del Siglo de Oro español" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  });
+}
+
+/* novedades */
+$("#nov").innerHTML = NOVEDADES.map(n=>`<li><time datetime="${n.f}">${new Date(n.f+"T12:00").toLocaleDateString("es-CO",{day:"numeric",month:"long",year:"numeric"})}</time><span>${n.t}</span></li>`).join("");
+</script>
+</body>
+</html>
